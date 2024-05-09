@@ -19,15 +19,18 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+
+
 /**
  * Water
  */
 // Geometry
 const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512)
-
 //Color
 debugObject.depthColor = '#0000ff' 
 debugObject.surfaceColor = '#0888ff' 
+debugObject.backgroundColor = '#969696'
+
 
 // Material
 const waterMaterial = new THREE.ShaderMaterial({
@@ -43,6 +46,7 @@ const waterMaterial = new THREE.ShaderMaterial({
 
         uDepthColor: {value: new THREE.Color(debugObject.depthColor)},
         uSurfaceColor: {value: new THREE.Color(debugObject.surfaceColor)},
+        uBackgroundColor: {value: new THREE.Color(debugObject.backgroundColor)},
         uColorOffset: {value: 3.5},
         uColorMultiplier: {value: 8.5},
 
@@ -76,6 +80,14 @@ gui.add(waterMaterial.uniforms.uSmallWavesElevation, 'value').min(0).max(2).step
 gui.add(waterMaterial.uniforms.uSmallWavesFrequency, 'value').min(0).max(10).step(0.001).name(`uSmallWavesFrequency`);
 gui.add(waterMaterial.uniforms.uSmallWavesSpeed, 'value').min(0).max(10).step(0.001).name(`uSmallWavesSpeed`);
 gui.add(waterMaterial.uniforms.uSmallWavesIterations, 'value').min(0).max(10).step(0.001).name(`uSmallWavesIterations`);
+gui
+.addColor(debugObject, "backgroundColor")
+.name("backgroundColor")
+.onChange(() => {
+    renderer.setClearColor(debugObject.backgroundColor)
+    waterMaterial.uniforms.uBackgroundColor.value.set(debugObject.backgroundColor);
+
+});
 
 
 
@@ -83,6 +95,7 @@ gui.add(waterMaterial.uniforms.uSmallWavesIterations, 'value').min(0).max(10).st
 const water = new THREE.Mesh(waterGeometry, waterMaterial)
 water.rotation.x = - Math.PI * 0.5
 scene.add(water)
+
 
 /**
  * Sizes
@@ -127,6 +140,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setClearColor(debugObject.backgroundColor)
 
 /**
  * Animate

@@ -13,6 +13,7 @@ import waterFragmentShader from './shaders/water/fragment.glsl'
 const gui = new GUI({ width: 340 })
 const debugObject = {}
 
+
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
@@ -25,11 +26,11 @@ const scene = new THREE.Scene()
  * Water
  */
 // Geometry
-const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512)
+const waterGeometry = new THREE.PlaneGeometry(4, 4, 512, 512)
 //Color
 debugObject.depthColor = '#0000ff' 
 debugObject.surfaceColor = '#0888ff' 
-debugObject.backgroundColor = '#969696'
+debugObject.backgroundColor = '#7f7f7f'
 
 
 // Material
@@ -53,7 +54,10 @@ const waterMaterial = new THREE.ShaderMaterial({
         uSmallWavesElevation: {value: 0.1},
         uSmallWavesFrequency: {value: 4.0},
         uSmallWavesSpeed: {value: 0.3},
-        uSmallWavesIterations: {value: 3.0}
+        uSmallWavesIterations: {value: 3.0},
+
+        uFogStart: {value: 0.5},
+        uFogEnd: {value: 2.0}
     }
 })
 
@@ -88,6 +92,10 @@ gui
     waterMaterial.uniforms.uBackgroundColor.value.set(debugObject.backgroundColor);
 
 });
+
+// Fog
+gui.add(waterMaterial.uniforms.uFogStart, 'value').min(0).max(10).step(0.001).name(`uFogStart`);
+gui.add(waterMaterial.uniforms.uFogEnd, 'value').min(0).max(10).step(0.001).name(`uFogEnd`);
 
 
 
@@ -141,7 +149,6 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor(debugObject.backgroundColor)
-
 /**
  * Animate
  */
